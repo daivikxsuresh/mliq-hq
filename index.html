@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MLiQ HQ — Capstone Team Tracker</title>
+<meta name="description" content="Live shared command center for the MLiQ capstone team." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+
+<!-- ════════════════════ GATE OVERLAY ════════════════════ -->
+<div id="gate" class="gate">
+  <div class="gate-card">
+    <div class="gate-mark">MLiQ</div>
+    <div class="gate-eyebrow">Capstone HQ · Class of 2027</div>
+    <h1 class="gate-title">Price the date,<br /><em>not the lead.</em></h1>
+    <p class="gate-sub">Team access only. Enter the passphrase to continue.</p>
+    <form id="gateForm" class="gate-form" autocomplete="off">
+      <input id="gateInput" type="password" placeholder="Passphrase" aria-label="Team passphrase" />
+      <button type="submit">Enter</button>
+    </form>
+    <p id="gateError" class="gate-error" hidden>Not quite — try again.</p>
+    <div class="gate-who" id="gateWho">Who's checking in?</div>
+    <div class="gate-people" id="gatePeople"><!-- member chips injected --></div>
+  </div>
+</div>
+
+<!-- ════════════════════ TOP NAV ════════════════════ -->
+<header class="topbar" id="topbar" hidden>
+  <div class="topbar-in">
+    <a href="#deck" class="brand"><span class="brand-mark">MLiQ</span><span class="brand-sub">HQ</span></a>
+    <nav class="nav">
+      <a href="#team">Team</a>
+      <a href="#checklist">Checklist</a>
+      <a href="#board">Board</a>
+      <a href="#meetings">Meetings</a>
+      <a href="#timeline">Timeline</a>
+    </nav>
+    <div class="topbar-right">
+      <span class="me-chip" id="meChip" title="Switch who you are"></span>
+      <span class="sync-dot" id="syncDot" title="Connecting…"></span>
+    </div>
+  </div>
+</header>
+
+<main id="app" hidden>
+
+  <!-- ════════════════════ 1 · COMMAND DECK ════════════════════ -->
+  <section id="deck" class="deck">
+    <div class="deck-bg" aria-hidden="true"></div>
+    <div class="wrap deck-in">
+      <div class="deck-eyebrow">MLiQ · Capstone Command Deck</div>
+      <h1 class="deck-head">Welcome back<span id="deckName"></span>.</h1>
+      <p class="deck-sub">A dynamic lead-pricing engine for The Glasshouses — and the home base for the six of us building it.</p>
+
+      <div class="tiles">
+        <div class="tile">
+          <div class="tile-fig"><span id="tDays" data-count="0">0</span></div>
+          <div class="tile-lab">days to <b>Final Presentation</b></div>
+        </div>
+        <div class="tile">
+          <div class="tile-fig"><span id="tPct" data-count="0">0</span><span class="pct">%</span></div>
+          <div class="tile-lab">checklist <b>complete</b></div>
+        </div>
+        <div class="tile tile-next" id="tileNext">
+          <div class="tile-next-lab">Next meeting</div>
+          <div class="tile-next-title" id="tNextTitle">—</div>
+          <div class="tile-next-when" id="tNextWhen">nothing scheduled yet</div>
+        </div>
+        <div class="tile">
+          <div class="tile-fig"><span id="tOnline" data-count="0">0</span></div>
+          <div class="tile-lab">teammates <b>online now</b></div>
+          <div class="presence-row" id="presenceRow"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ 2 · THE TEAM ════════════════════ -->
+  <section id="team" class="block">
+    <div class="wrap">
+      <div class="block-head">
+        <span class="eyebrow"><span class="num">01</span><span class="bar"></span>Who we are</span>
+        <h2 class="headline">Six people, three disciplines.</h2>
+        <p class="lede">Storytelling &amp; delivery, writing &amp; editing, and modeling &amp; engineering — all covered within the group. This is the team building MLiQ.</p>
+      </div>
+      <div class="team-grid" id="teamGrid"><!-- member cards injected --></div>
+      <div class="mission">
+        <div class="mission-lab">The concept</div>
+        <p>Event-space pricing has no public benchmark, and a fixed-cost venue loses money on every day it sits empty. <b>MLiQ</b> quotes each incoming lead by the opportunity cost of committing the date now — turning an unsold day from a quiet loss into a priced decision. Built on The Glasshouses' own Salesforce history of held <em>and</em> lost opportunities.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ 3 · CHECKLIST ════════════════════ -->
+  <section id="checklist" class="block block-tint">
+    <div class="wrap">
+      <div class="block-head">
+        <span class="eyebrow"><span class="num">02</span><span class="bar"></span>The work</span>
+        <h2 class="headline">Shared checklist.</h2>
+        <p class="lede">Grouped by CRISP-DM phase. Assign an owner, set a due date, check it off — everyone sees it instantly.</p>
+        <div class="overall">
+          <div class="overall-track"><div class="overall-fill" id="overallFill"></div></div>
+          <span class="overall-pct" id="overallPct">0%</span>
+        </div>
+      </div>
+      <div id="phases" class="phases">
+        <div class="skeleton-list" id="taskSkeleton">
+          <div class="sk-row"></div><div class="sk-row"></div><div class="sk-row"></div>
+          <div class="sk-row"></div><div class="sk-row"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ 4 · MESSAGE BOARD ════════════════════ -->
+  <section id="board" class="block">
+    <div class="wrap">
+      <div class="block-head">
+        <span class="eyebrow"><span class="num">03</span><span class="bar"></span>Signal</span>
+        <h2 class="headline">Message board.</h2>
+        <p class="lede">Drop announcements, decisions, and heads-ups. Pin the ones that matter.</p>
+      </div>
+      <form id="msgForm" class="msg-form">
+        <textarea id="msgInput" rows="2" placeholder="Share something with the team…" aria-label="New message"></textarea>
+        <div class="msg-form-row">
+          <label class="pin-toggle"><input type="checkbox" id="msgPin" /> <span>Pin</span></label>
+          <button type="submit">Post</button>
+        </div>
+      </form>
+      <div id="messages" class="messages">
+        <div class="skeleton-list">
+          <div class="sk-card"></div><div class="sk-card"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ 5 · MEETINGS ════════════════════ -->
+  <section id="meetings" class="block block-tint">
+    <div class="wrap">
+      <div class="block-head">
+        <span class="eyebrow"><span class="num">04</span><span class="bar"></span>Sync up</span>
+        <h2 class="headline">Meetings &amp; Zooms.</h2>
+        <p class="lede">Schedule the weekly sync and ad-hoc calls. RSVP so we know who's in. Add to your calendar in one click.</p>
+      </div>
+      <button class="add-btn" id="addMeetingBtn">+ Schedule a meeting</button>
+      <div id="meetingsList" class="meetings-list">
+        <div class="skeleton-list">
+          <div class="sk-card"></div><div class="sk-card"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ 6 · TIMELINE ════════════════════ -->
+  <section id="timeline" class="block">
+    <div class="wrap">
+      <div class="block-head">
+        <span class="eyebrow"><span class="num">05</span><span class="bar"></span>The arc</span>
+        <h2 class="headline">Start with the business, then the data.</h2>
+        <p class="lede">We follow CRISP-DM, the standard cycle for data-mining projects. Here's where we are.</p>
+      </div>
+      <div class="ribbon" id="ribbon"><!-- phase ribbon injected --></div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span class="footer-mark">MLiQ</span>
+    <span>Capstone HQ · NYU Stern MSBAi Class of 2027</span>
+  </footer>
+</main>
+
+<!-- ════════════════════ MODAL (add/edit task & meeting) ════════════════════ -->
+<div id="modal" class="modal" hidden>
+  <div class="modal-card" id="modalCard">
+    <button class="modal-x" id="modalX" aria-label="Close">×</button>
+    <div id="modalBody"><!-- form injected --></div>
+  </div>
+</div>
+
+<!-- ════════════════════ TOAST + CONFETTI ════════════════════ -->
+<div id="toast" class="toast" hidden></div>
+<canvas id="confetti" class="confetti" aria-hidden="true"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/config.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
