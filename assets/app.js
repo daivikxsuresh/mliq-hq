@@ -125,44 +125,48 @@
   /* ======================================================================
      GATE + IDENTITY
      ====================================================================== */
+  function setIdentity(k) {
+    ME = k; localStorage.setItem("mliq-me", ME);
+    const me = memberOf(ME);
+    const mc = $("#meChip"); if (mc) mc.textContent = me ? me.name.split(" ")[0] : "Set name";
+    const dn = $("#deckName"); if (dn) dn.textContent = me ? ", " + me.name.split(" ")[0] : "";
+    if (booted) {
+      renderTeam(); renderMessages(); renderMeetings(); updateComposer();
+      if (store.mode !== "live") updatePresenceUI(ME ? [ME] : []);
+    }
+  }
+
+  function updateComposer() {
+    const me = memberOf(ME); const ta = $("#msgInput");
+    if (ta) ta.placeholder = me ? `Share something with the team, ${me.name.split(" ")[0]}…` : "Share something with the team…";
+  }
+
   function renderGatePeople() {
-    $("#gatePeople").innerHTML = TEAM.map((m) =>
-      `<button class="who-chip ${m.key === ME ? "sel" : ""}" data-k="${m.key}">${escapeHtml(m.name.split(" ")[0])}</button>`).join("");
-    $$("#gatePeople .who-chip").forEach((b) => b.onclick = () => {
-      ME = b.dataset.k; localStorage.setItem("mliq-me", ME);
-      $$("#gatePeople .who-chip").forEach((x) => x.classList.toggle("sel", x.dataset.k === ME));
-    });
+    $("#gatePeople").innerHTML = TEAM.map((m, i) =>
+      `<button class="who-card ${m.key === ME ? "sel" : ""}" data-k="${m.key}" style="animation-delay:${(i * 0.05).toFixed(2)}s">
+        <span class="who-av">${escapeHtml(m.initials)}</span>
+        <span class="who-name">${escapeHtml(m.name.split(" ")[0])}</span>
+        <span class="who-role">${escapeHtml(m.role)}</span>
+      </button>`).join("");
+    $$("#gatePeople .who-card").forEach((b) => b.onclick = () => { setIdentity(b.dataset.k); enterApp(); });
   }
 
   function enterApp() {
-    $("#gate").classList.add("hide");
-    setTimeout(() => { $("#gate").style.display = "none"; }, 600);
+    const g = $("#gate"); g.classList.add("hide");
+    setTimeout(() => { g.style.display = "none"; }, 600);
     $("#topbar").hidden = false; $("#app").hidden = false;
     boot();
   }
-
-  $("#gateForm").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const v = $("#gateInput").value.trim();
-    if (v === CFG.TEAM_PASSPHRASE) {
-      if (!ME) { $("#gateError").textContent = "Pick who you are first ↓"; $("#gateError").hidden = false; return; }
-      sessionStorage.setItem("mliq-unlocked", "1"); enterApp();
-    } else {
-      const g = $("#gate"); g.classList.add("shake"); $("#gateError").hidden = false;
-      $("#gateError").textContent = "Not quite — try again.";
-      setTimeout(() => g.classList.remove("shake"), 450);
-    }
-  });
 
   /* ======================================================================
      RENDER — TEAM
      ====================================================================== */
   function renderTeam() {
     $("#teamGrid").innerHTML = TEAM.map((m) => `
-      <div class="member" data-k="${m.key}">
+      <div class="member ${m.key === ME ? "you" : ""}" data-k="${m.key}">
         <div class="member-top">
           <div class="avatar" data-av="${m.key}">${escapeHtml(m.initials)}</div>
-          <div><div class="member-name">${escapeHtml(m.name)}</div><div class="member-role">${escapeHtml(m.role)}</div></div>
+          <div><div class="member-name">${escapeHtml(m.name)}${m.key === ME ? ' <span class="you-badge">You</span>' : ""}</div><div class="member-role">${escapeHtml(m.role)}</div></div>
         </div>
         <div class="member-skills">${escapeHtml(m.skills)}</div>
         <a class="member-email" href="mailto:${escapeHtml(m.email)}">${escapeHtml(m.email)}</a>
@@ -505,16 +509,17 @@
     // me chip
     const me = memberOf(ME);
     $("#meChip").textContent = me ? me.name.split(" ")[0] : "Set name";
-    $("#meChip").onclick = () => { $("#gate").style.display = "flex"; $("#gate").classList.remove("hide"); renderGatePeople(); $("#gateInput").value = CFG.TEAM_PASSPHRASE; };
+    $("#meChip").title = "Switch teammate";
+    $("#meChip").onclick = () => { const g = $("#gate"); g.style.display = "flex"; g.classList.remove("hide"); renderGatePeople(); };
     $("#deckName").textContent = me ? ", " + me.name.split(" ")[0] : "";
 
     renderTeam();
+    updateComposer();
     scrollspy();
     setSync(true);
 
-    if (store.mode === "demo") {
-      toast(`Demo mode — add Supabase keys for live team sync`);
-    }
+    const meName = me ? me.name.split(" ")[0] : "team";
+    setTimeout(() => toast(`Welcome to MLiQ HQ, <b>${escapeHtml(meName)}</b>`), 450);
 
     await Promise.all([loadTasks(), loadMessages(), loadMeetings()]);
     startPresence();
@@ -532,9 +537,5 @@
      INIT
      ====================================================================== */
   renderGatePeople();
-  if (sessionStorage.getItem("mliq-unlocked") === "1" && ME) {
-    enterApp();
-  } else {
-    $("#gateInput").focus();
-  }
+  if (ME) { enterApp(); }
 })();

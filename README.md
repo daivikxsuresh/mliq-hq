@@ -5,7 +5,8 @@ One URL the whole team bookmarks: a real-time **checklist**, **message board**, 
 **meeting scheduler** — all synced across teammates via Supabase.
 
 > **Live:** https://daivikxsuresh.github.io/mliq-hq/
-> **Passphrase:** set in `assets/config.js` (`TEAM_PASSPHRASE`)
+> **Entry:** no password — each teammate taps their name to enter, and the
+> board personalizes to them (greeting, "You" badge, presence, RSVPs).
 
 ---
 

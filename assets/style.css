@@ -59,7 +59,7 @@ body::before {
 @keyframes gateOut { to { opacity: 0; visibility: hidden; transform: scale(1.04); } }
 
 .gate-card {
-  width: 100%; max-width: 440px; text-align: center;
+  width: 100%; max-width: 560px; text-align: center;
   animation: riseIn .7s var(--ease-out) both;
 }
 .gate-mark {
@@ -97,16 +97,24 @@ body::before {
 @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)} }
 .gate-error { color: var(--red); font-size: 12px; margin-top: 12px; }
 
-.gate-who { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--taupe); margin: 30px 0 12px; }
-.gate-people { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-.who-chip {
-  font-family: var(--mono); font-size: 12px; padding: 7px 13px;
-  border: 1px solid var(--line-2); border-radius: 100px; cursor: pointer;
-  background: transparent; color: var(--cream-dim);
-  transition: all .18s var(--ease-out);
+.gate-people { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 30px; }
+.who-card {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 18px 12px; border: 1px solid var(--line-2); border-radius: 14px;
+  background: var(--ink); cursor: pointer; text-align: center;
+  transition: transform .2s var(--ease-out), border-color .2s, box-shadow .2s;
+  animation: riseIn .5s var(--ease-out) both;
 }
-.who-chip:hover { border-color: var(--gold); color: var(--cream); transform: translateY(-2px); }
-.who-chip.sel { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+.who-card:hover { transform: translateY(-4px); border-color: var(--gold); box-shadow: var(--shadow-lg); }
+.who-card.sel { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(165,124,46,.3); }
+.who-av {
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 14px; font-weight: 600;
+  background: var(--ink-3); color: var(--gold); border: 1px solid var(--line-2);
+}
+.who-name { font-family: var(--serif); font-size: 18px; font-weight: 600; line-height: 1; }
+.who-role { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .04em; color: var(--taupe); line-height: 1.35; }
 
 /* ────────────────────────── TOPBAR ────────────────────────── */
 .topbar {
@@ -202,6 +210,8 @@ body::before {
   transition: transform .3s var(--ease-out), box-shadow .3s, border-color .3s;
 }
 .member:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--gold); }
+.member.you { border-color: var(--gold); box-shadow: 0 0 0 1px rgba(165,124,46,.28), var(--shadow); }
+.you-badge { font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink); background: var(--gold); padding: 2px 7px; border-radius: 100px; vertical-align: middle; margin-left: 6px; }
 .member-top { display: flex; align-items: center; gap: 13px; }
 .avatar {
   width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
@@ -420,6 +430,7 @@ body::before {
   .gate-title { font-size: 40px; }
   .deck-head { font-size: 36px; }
   .headline { font-size: 30px; }
+  .gate-people { grid-template-columns: repeat(2, 1fr); }
 }
 
 /* ────────────────────────── REDUCED MOTION ────────────────────────── */
