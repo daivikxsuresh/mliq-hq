@@ -241,6 +241,32 @@ body::before {
 .mission p { font-family: var(--serif); font-size: 19px; line-height: 1.5; color: var(--cream); }
 .mission b { color: var(--gold); } .mission em { font-style: italic; }
 
+/* ────────────────────────── BRIEF ────────────────────────── */
+.brief-updated { font-family: var(--mono); font-size: 11px; letter-spacing: .04em; text-transform: uppercase; color: var(--gold); }
+.brief-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.brief-card {
+  background: var(--ink); border: 1px solid var(--line); border-radius: 16px;
+  padding: 22px 24px; box-shadow: var(--shadow);
+  transition: transform .3s var(--ease-out), box-shadow .3s, border-color .3s;
+}
+.brief-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--line-2); }
+.brief-card-head { display: flex; align-items: flex-start; gap: 13px; padding-bottom: 14px; margin-bottom: 12px; border-bottom: 1px solid var(--ink-2); }
+.brief-ic {
+  width: 38px; height: 38px; flex-shrink: 0; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+  background: var(--ink-3); border: 1px solid var(--line-2);
+}
+.brief-card-title { font-family: var(--serif); font-size: 22px; font-weight: 600; line-height: 1.1; }
+.brief-card-blurb { font-family: var(--mono); font-size: 11px; color: var(--gold); text-transform: uppercase; letter-spacing: .05em; margin-top: 3px; }
+.brief-points { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.brief-points li { position: relative; padding-left: 18px; font-size: 13px; line-height: 1.55; color: var(--cream-dim); }
+.brief-points li::before { content: ""; position: absolute; left: 2px; top: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--gold); opacity: .55; }
+.brief-points b { color: var(--cream); font-weight: 600; }
+
+@media (max-width: 720px) {
+  .brief-grid { grid-template-columns: 1fr; }
+}
+
 /* ────────────────────────── CHECKLIST ────────────────────────── */
 .phase {
   background: var(--ink); border: 1px solid var(--line); border-radius: 16px;

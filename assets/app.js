@@ -11,6 +11,8 @@
   const TEAM   = window.MLIQ_TEAM   || [];
   const PHASES = window.MLIQ_PHASES || [];
   const SEED   = window.MLIQ_SEED_TASKS || [];
+  const BRIEF  = window.MLIQ_BRIEF   || null;
+  const MILES  = window.MLIQ_MILESTONES || [];
 
   const $  = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -170,6 +172,30 @@
         </div>
         <div class="member-skills">${escapeHtml(m.skills)}</div>
         <a class="member-email" href="mailto:${escapeHtml(m.email)}">${escapeHtml(m.email)}</a>
+      </div>`).join("");
+  }
+
+  /* ======================================================================
+     RENDER — BRIEF (consolidated client-session summary, config-driven)
+     ====================================================================== */
+  function renderBrief() {
+    const host = $("#briefGrid");
+    if (!host || !BRIEF || !Array.isArray(BRIEF.cards)) return;
+    const up = $("#briefUpdated");
+    if (up && BRIEF.updated) up.textContent = "Updated " + BRIEF.updated + ".";
+    host.innerHTML = BRIEF.cards.map((c) => `
+      <div class="brief-card">
+        <div class="brief-card-head">
+          <span class="brief-ic" aria-hidden="true">${escapeHtml(c.icon || "•")}</span>
+          <div>
+            <div class="brief-card-title">${escapeHtml(c.title || "")}</div>
+            ${c.blurb ? `<div class="brief-card-blurb">${escapeHtml(c.blurb)}</div>` : ""}
+          </div>
+        </div>
+        <ul class="brief-points">
+          ${(c.points || []).map((p) =>
+            `<li>${p.k ? `<b>${escapeHtml(p.k)}.</b> ` : ""}${escapeHtml(p.v || "")}</li>`).join("")}
+        </ul>
       </div>`).join("");
   }
 
@@ -443,8 +469,18 @@
     }
     requestAnimationFrame(step);
   }
-  function daysToFinal() {
-    const d = new Date(CFG.FINAL_PRESENTATION); return Math.max(0, Math.ceil((d - Date.now()) / 864e5));
+  function nextMilestone() {
+    const list = MILES.map((m) => ({ label: m.label, t: new Date(m.at) }))
+      .filter((m) => !isNaN(m.t)).sort((a, b) => a.t - b.t);
+    if (!list.length) return { label: "Final presentation", t: new Date(CFG.FINAL_PRESENTATION) };
+    const now = Date.now();
+    return list.find((m) => m.t.getTime() >= now) || list[list.length - 1];
+  }
+  function updateCountdown() {
+    const m = nextMilestone();
+    const days = Math.max(0, Math.ceil((m.t - Date.now()) / 864e5));
+    const lab = $("#tMilestone"); if (lab) lab.textContent = m.label;
+    animateCount($("#tDays"), days);
   }
 
   /* ======================================================================
@@ -495,7 +531,7 @@
     renderChecklist(); renderRibbon();
   }
   async function loadMessages() { MSGS = await store.list("messages"); renderMessages(); }
-  async function loadMeetings() { MEETINGS = await store.list("meetings"); renderMeetings(); animateCount($("#tDays"), daysToFinal()); }
+  async function loadMeetings() { MEETINGS = await store.list("meetings"); renderMeetings(); updateCountdown(); }
 
   function setSync(ok) { const d = $("#syncDot"); d.className = "sync-dot " + (ok ? "ok" : "off"); d.title = ok ? (store.mode === "live" ? "Live · synced" : "Demo mode (local only)") : "Offline"; }
 
@@ -513,10 +549,12 @@
     $("#meChip").onclick = () => { const g = $("#gate"); g.style.display = "flex"; g.classList.remove("hide"); renderGatePeople(); };
     $("#deckName").textContent = me ? ", " + me.name.split(" ")[0] : "";
 
+    renderBrief();
     renderTeam();
     updateComposer();
     scrollspy();
     setSync(true);
+    updateCountdown();
 
     const meName = me ? me.name.split(" ")[0] : "team";
     setTimeout(() => toast(`Welcome to MLiQ HQ, <b>${escapeHtml(meName)}</b>`), 450);
@@ -530,7 +568,7 @@
     store.subscribe("meetings", () => loadMeetings());
 
     // refresh "time ago" + next tile periodically
-    setInterval(() => { renderMessages(); updateNextTile(); animateCount($("#tDays"), daysToFinal()); }, 60000);
+    setInterval(() => { renderMessages(); updateNextTile(); updateCountdown(); }, 60000);
   }
 
   /* ======================================================================
